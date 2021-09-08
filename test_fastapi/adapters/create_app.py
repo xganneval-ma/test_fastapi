@@ -21,6 +21,7 @@ class Person(BaseModel):
     birthdate: datetime.datetime
     gender: str
 
+
 async def get_persons(waiting_time: int, count: int):
     async with aiohttp.ClientSession() as session:
         async with session.get(URL % (waiting_time, count)) as resp:
@@ -30,18 +31,18 @@ app = FastAPI()
 
 logger = getLogger(__name__)
 
+
 @app.get("/")
 @app.get("/test")
 async def data(count: int = 0):
     # return "toto"
     results = await asyncio.gather(
-            *[
-                get_persons(senari[0], senari[1])
-                for senari in SENARIOS
-            ]
-        )
+        *[
+            get_persons(senari[0], senari[1])
+            for senari in SENARIOS
+        ]
+    )
     persons = functools.reduce(add, results)
-    persons = [Person(**person) for person in persons]
+    persons = (Person(**person) for person in persons)
     persons.sort(key=lambda item: item.birthdate)
-    print(persons[0], [type(persons[0].birthdate)])
     return persons
