@@ -1,0 +1,10 @@
+version: '3.4'
+services:
+  app:
+    container_name: test_fastapi
+    build:
+      context: .
+    volumes:
+      - .:/home/test_fastapi
+    command: uvicorn test_fastapi.adapters.create_app:app --host 0.0.0.0 --port 9600
+    network_mode: "host"
