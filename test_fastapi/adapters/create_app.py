@@ -9,12 +9,17 @@ import functools
 
 URL = "http://localhost:9518/firstname?waiting_time=%s&count=%s"
 
-SENARIOS = (
+SENARIOS_1 = (
     [[100, 100] for i in range(5)] +
     [[80, 50] for i in range(5)] +
     [[50, 70] for i in range(5)]
 )
 
+SENARIOS_2 = (
+    [[1000, 100] for i in range(5)] +
+    [[800, 50] for i in range(5)] +
+    [[500, 70] for i in range(5)]
+)
 
 class Person(BaseModel):
     first_name: str
@@ -34,15 +39,14 @@ logger = getLogger(__name__)
 
 @app.get("/")
 @app.get("/test")
-async def data(count: int = 0):
-    # return "toto"
+async def data():
     results = await asyncio.gather(
         *[
             get_persons(senari[0], senari[1])
-            for senari in SENARIOS
+            for senari in SENARIOS_1
         ]
     )
     persons = functools.reduce(add, results)
-    persons = (Person(**person) for person in persons)
+    persons = [Person(**person) for person in persons]
     persons.sort(key=lambda item: item.birthdate)
     return persons
